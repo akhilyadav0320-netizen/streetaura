@@ -1,59 +1,98 @@
 import React from "react";
-import { Navbar, Nav, Container, Button } from "react-bootstrap";
-import { FaShoppingCart, FaSignInAlt, FaSignOutAlt } from "react-icons/fa"; // Removed FaUserShield
+import { Navbar, Nav, Container, Button, FormControl } from "react-bootstrap";
+import { FaShoppingCart, FaSignInAlt, FaSignOutAlt, FaSearch, FaTimes } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 
-const Topbar = ({ cartCount, isLoggedIn, onLogout }) => { // Removed isAdmin prop
+const Topbar = ({ cartCount, isLoggedIn, onLogout, setSearchTerm, searchTerm }) => {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
   const isAdminPage = location.pathname === "/admin";
 
   return (
-    <Navbar bg="dark" expand="lg" sticky="top" className="shadow-sm" style={{ padding: "10px 0" }}>
-      <Container>
+    <Navbar bg="dark" variant="dark" expand="lg" sticky="top" className="shadow-sm py-2">
+      <Container fluid className="px-lg-5">
+        
+        {/* BRAND LOGO */}
         <Navbar.Brand as={Link} to="/" className="d-flex align-items-center" style={{ color: "#c60935", fontWeight: "bold", gap: "10px" }}>
-          <img src="Image/BrandLogo1.png" alt="Logo" width="40" height="40" className="rounded" />
-          StreetAura
+          <img src="Image/BrandLogo1.png" alt="Logo" width="35" height="35" className="rounded" />
+          <span className="fs-5">StreetAura</span>
         </Navbar.Brand>
 
-        <Navbar.Toggle aria-controls="basic-navbar-nav" className="bg-light" />
-        
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto align-items-center mt-3 mt-lg-0">
-            
-            {/* CART BUTTON - Hidden on Login and Admin pages */}
-            {!isLoginPage && !isAdminPage && (
-              <Nav.Link as={Link} to="/cart" className="text-white position-relative d-flex align-items-center me-lg-4 mb-3 mb-lg-0">
-                <FaShoppingCart size={18} className="me-2" /> Cart
-                {cartCount > 0 && (
-                  <span style={{ position: "absolute", top: "-5px", right: "-10px", background: "#c60935", color: "white", borderRadius: "50%", padding: "2px 6px", fontSize: "11px", fontWeight: "bold" }}>
-                    {cartCount}
-                  </span>
-                )}
-              </Nav.Link>
-            )}
+        {/* SEARCH BAR (Desktop: Visible only on Large Screens) */}
+        {!isLoginPage && !isAdminPage && (
+          <div className="d-none d-lg-block flex-grow-1 mx-4" style={{ maxWidth: "500px" }}>
+            <div className="position-relative">
+              <FaSearch className="position-absolute start-0 ms-3 text-secondary" style={{ top: "50%", transform: "translateY(-50%)", zIndex: 5 }} />
+              <FormControl
+                type="text"
+                placeholder="Search products..."
+                className="ps-5 pe-5 rounded-pill border-0 shadow-none"
+                style={{ backgroundColor: "#f8f9fa" }}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <FaTimes 
+                  className="position-absolute end-0 me-3 text-secondary" 
+                  onClick={() => setSearchTerm("")} 
+                  style={{ top: "50%", transform: "translateY(-50%)", cursor: "pointer", zIndex: 5 }} 
+                />
+              )}
+            </div>
+          </div>
+        )}
 
-            {/* ACTION BUTTONS */}
-            <div className="d-flex align-items-center gap-2">
+        <Navbar.Toggle aria-controls="basic-navbar-nav" className="border-0 shadow-none" />
+
+        <Navbar.Collapse id="basic-navbar-nav">
+          
+          {/* SEARCH BAR (Mobile: Visible only inside the Hamburger Menu) */}
+          {!isLoginPage && !isAdminPage && (
+            <div className="d-lg-none my-3">
+              <div className="position-relative">
+                <FaSearch className="position-absolute start-0 ms-3 text-secondary" style={{ top: "50%", transform: "translateY(-50%)" }} />
+                <FormControl
+                  type="text"
+                  placeholder="Search products..."
+                  className="ps-5 rounded-pill border-0"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+
+          <Nav className="ms-auto align-items-center">
+            {/* CATEGORY LAYOUT LINKS */}
+            <div className="d-flex flex-column flex-lg-row align-items-center gap-3 me-lg-4 mb-3 mb-lg-0">
+              <Nav.Link as={Link} to="/men" className={`fw-semibold ${location.pathname === "/men" ? "text-danger" : "text-white"}`}>MENS</Nav.Link>
+              <Nav.Link as={Link} to="/kids" className={`fw-semibold ${location.pathname === "/kids" ? "text-danger" : "text-white"}`}>KIDS</Nav.Link>
+              <Nav.Link as={Link} to="/shoes" className={`fw-semibold ${location.pathname === "/shoes" ? "text-danger" : "text-white"}`}>SHOES</Nav.Link>
+            </div>
+
+            <div className="d-flex align-items-center gap-4">
+              {/* CART ICON */}
+              {!isLoginPage && !isAdminPage && (
+                <Nav.Link as={Link} to="/cart" className="text-white position-relative p-0">
+                  <FaShoppingCart size={22} />
+                  {cartCount > 0 && (
+                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: "0.6rem" }}>
+                      {cartCount}
+                    </span>
+                  )}
+                </Nav.Link>
+              )}
+
+              {/* AUTH BUTTON */}
               {isLoggedIn ? (
-                <>
-                  {/* LOGOUT BUTTON */}
-                  <Button 
-                    variant="danger" 
-                    size="sm"
-                    className="px-3 py-1 d-flex align-items-center border-0 shadow-sm" 
-                    style={{ backgroundColor: "#c60935" }}
-                    onClick={onLogout}
-                  >
-                    <FaSignOutAlt className="me-2" /> Logout
-                  </Button>
-                </>
+                <Button variant="danger" size="sm" className="rounded-pill px-3 py-1 fw-bold border-0" onClick={onLogout} style={{ backgroundColor: "#c60935" }}>
+                  <FaSignOutAlt className="me-1" /> Logout
+                </Button>
               ) : (
-                /* LOGIN BUTTON */
                 !isLoginPage && (
-                  <Nav.Link as={Link} to="/login" className="text-white border rounded px-4 py-1">
-                    <FaSignInAlt className="me-2" /> Login
-                  </Nav.Link>
+                  <Button as={Link} to="/login" variant="outline-light" size="sm" className="rounded-pill px-4 fw-bold">
+                    Login
+                  </Button>
                 )
               )}
             </div>

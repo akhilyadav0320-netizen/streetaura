@@ -11,10 +11,9 @@ import Login from "./Pages/Login";
 import Checkout from "./Pages/Checkout"; 
 
 import Topbar from "./Components/Topbar";
-import Header from "./Components/Header";
+// Header import removed
 import Footer from "./Components/Footer";
 import FlashSaleBanner from "./Components/FlashSaleBanner";
-
 
 function App() {
   const [cart, setCart] = useState([]); 
@@ -31,7 +30,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("isAdmin"); // Cleaning up local storage anyway
+    localStorage.removeItem("isAdmin");
     setIsLoggedIn(false);
     setCart([]); 
     navigate("/login");
@@ -60,17 +59,16 @@ function App() {
     <div className="d-flex flex-column min-vh-100">
       {location.pathname === "/" && <FlashSaleBanner />}
       
+      {/* Search props added to Topbar */}
       <Topbar 
         cartCount={cartTotal} 
         isLoggedIn={isLoggedIn} 
         onLogout={handleLogout} 
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
       />
 
-      {location.pathname !== "/login" && 
-       location.pathname !== "/cart" && 
-       location.pathname !== "/checkout" && (
-        <Header setSearchTerm={setSearchTerm} searchTerm={searchTerm} />
-      )}
+      {/* Header component section removed entirely */}
 
       <div className="flex-grow-1">
         <Routes>
@@ -83,6 +81,7 @@ function App() {
           <Route path="/checkout" element={<Checkout setCart={setCart} />} /> 
         </Routes>
       </div>
+
       {location.pathname !== "/login" && 
        location.pathname !== "/checkout" && (
         <Footer />
